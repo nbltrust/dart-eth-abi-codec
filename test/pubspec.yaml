@@ -1,0 +1,14 @@
+name: eth_abi_codec_test
+description: Test cases of eth_abi_codec lib
+publish_to: 'none'
+
+dependencies:
+  json_annotation: ^3.0.0
+  convert: ^2.1.1
+  typed_data: ^1.2.0
+  test: any
+  eth_abi_codec:
+    path: ../
+
+dev_dependencies:
+  build_runner: any
