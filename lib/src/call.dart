@@ -26,6 +26,9 @@ class ContractCall {
   String functionName;
   List<CallParam> callParams;
 
+  dynamic getCallParam(String paramName) =>
+    callParams.firstWhere((p) => p.paramName == paramName, orElse: () => null)?.paramValue;
+
   /// fromJson takes a Map<String, dynamic> as input
   ///
   ///```json
