@@ -18,6 +18,8 @@ bool isDynamicType(String typeName) {
 
 Uint8List padLeft(Uint8List d, int alignBytes) {
   int padLength = alignBytes - d.length % alignBytes;
+  if(padLength == alignBytes)
+    padLength = 0;
   var filled = new List<int>.filled(padLength, 0);
   return Uint8List.fromList(Uint8List.fromList(filled) + d);
 }
@@ -196,7 +198,7 @@ Uint8List encodeType(String type, dynamic data) {
   }
 
   if(type.startsWith('uint')) {
-    if(data.runtimeType == BigInt)
+    if(data is BigInt)
       return encodeUint256(data);
     else
       return encodeInt(data);
