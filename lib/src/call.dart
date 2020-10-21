@@ -29,6 +29,8 @@ class ContractCall {
   dynamic getCallParam(String paramName) =>
     callParams.firstWhere((p) => p.paramName == paramName, orElse: () => null)?.paramValue;
 
+  ContractCall(this.functionName, this.callParams);
+
   /// fromJson takes a Map<String, dynamic> as input
   ///
   ///```json
@@ -78,8 +80,8 @@ class ContractCall {
 
   Uint8List toBinary(ContractABI abi) {
     var abiEntry = abi.getABIEntryByMethodName(functionName);
-    var methodId = abiEntry.methodId;
-
-    var encodec = encodeType(abiEntry.paramDescription, callParams);
+    return Uint8List.fromList(
+      abiEntry.methodBytes + 
+      encodeType(abiEntry.paramDescription, callParams.map((i) => i.paramValue).toList()));
   }
 }

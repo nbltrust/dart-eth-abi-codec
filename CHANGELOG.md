@@ -1,3 +1,6 @@
+# 0.1.2
+* Add encoding of contract call
+
 # 0.1.1
 * Add getCallParam to ContractCall
 

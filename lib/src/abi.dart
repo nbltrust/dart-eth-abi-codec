@@ -32,11 +32,12 @@ class ContractABIEntry {
     return '(${params})';
   }
 
-  String get methodId {
+  Uint8List get methodBytes {
     var s = '${name}${paramDescription}'.codeUnits;
-    return hex.encode(
-      SHA3Digest(256, true).process(Uint8List.fromList(s)).sublist(0, 4));
+    return SHA3Digest(256, true).process(Uint8List.fromList(s)).sublist(0, 4);
   }
+
+  String get methodId => hex.encode(methodBytes);
 
   ContractABIEntry.fromJson(Map<String, dynamic> json):
     name = json['name'],

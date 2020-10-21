@@ -1,4 +1,4 @@
-library eth_abi_codec_test.decode_tests;
+library eth_abi_codec_test.encode_tests;
 
 import 'package:test/test.dart';
 import 'package:convert/convert.dart';
