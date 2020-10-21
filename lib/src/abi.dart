@@ -51,6 +51,7 @@ class ContractABIEntry {
 class ContractABI {
   final List<ContractABIEntry> abis;
   Map<String, ContractABIEntry> methodIdMap = new Map(); // maps from method id to method entry
+  Map<String, ContractABIEntry> methodNameMap = new Map(); // maps from method name to method entry
 
   ContractABI.fromJson(List<dynamic> json):
     abis = List<ContractABIEntry>
@@ -62,10 +63,15 @@ class ContractABI {
     {
       abis.forEach((element) {
         methodIdMap[element.methodId] = element;
+        methodNameMap[element.name] = element;
       });
     }
 
   ContractABIEntry getABIEntryByMethodId(String methodId) {
     return methodIdMap[methodId];
+  }
+
+  ContractABIEntry getABIEntryByMethodName(String methodName) {
+    return methodNameMap[methodName];
   }
 }

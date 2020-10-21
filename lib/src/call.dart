@@ -75,4 +75,11 @@ class ContractCall {
       callParams.add(CallParam(abiEntry.inputs[i].name, decoded[i]));
     }
   }
+
+  Uint8List toBinary(ContractABI abi) {
+    var abiEntry = abi.getABIEntryByMethodName(functionName);
+    var methodId = abiEntry.methodId;
+
+    var encodec = encodeType(abiEntry.paramDescription, callParams);
+  }
 }
