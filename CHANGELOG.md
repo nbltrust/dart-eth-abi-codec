@@ -1,3 +1,6 @@
+# 0.1.3
+* Fix bug when encoding/decoding for empty param list
+
 # 0.1.2
 * Add encoding of contract call
 
