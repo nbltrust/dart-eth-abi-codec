@@ -18,10 +18,8 @@ void main() {
     var call = ContractCall.fromBinary(data, abi);
     expect(call.functionName, 'transfer');
     expect(call.callParams.length, 2);
-    expect(call.callParams[0].paramName, '_to');
-    expect(call.callParams[0].paramValue, 'c9d983203307abccd3e1b303a00ea0a19724fe2c');
-    expect(call.callParams[1].paramName, '_value');
-    expect(call.callParams[1].paramValue.toInt(), 13412000000);
+    expect(call.callParams['_to'], 'c9d983203307abccd3e1b303a00ea0a19724fe2c');
+    expect(call.callParams['_value'], BigInt.from(13412000000));
     expect(call.getCallParam('_to'), 'c9d983203307abccd3e1b303a00ea0a19724fe2c');
   });
 
@@ -32,6 +30,5 @@ void main() {
     expect(call.functionName, 'approve');
     expect(call.callParams.length, 2);
     expect(call.getCallParam('_to'), null);
-    print(jsonEncode(call));
   });
 }

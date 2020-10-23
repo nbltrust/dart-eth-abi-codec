@@ -18,14 +18,10 @@ void main() {
     var call = ContractCall.fromBinary(data, abi);
     expect(call.functionName, 'swapExactETHForTokens');
     expect(call.callParams.length, 4);
-    expect(call.callParams[0].paramName, 'amountOutMin');
-    expect(call.callParams[1].paramName, 'path');
-    expect(call.callParams[2].paramName, 'to');
-    expect(call.callParams[3].paramName, 'deadline');
-    expect(call.callParams[0].paramValue.toInt(), 28535365762082785);
-    expect(call.callParams[1].paramValue[1], 'aaf64bfcc32d0f15873a02163e7e500671a4ffcd');
-    expect(call.callParams[2].paramValue, 'a964e7475f81733e800744b93950c0c1c9923902');
-    expect(call.callParams[3].paramValue.toInt(), 1602326092);
+    expect(call.callParams['amountOutMin'], BigInt.from(28535365762082785));
+    expect(call.callParams['path'][1], 'aaf64bfcc32d0f15873a02163e7e500671a4ffcd');
+    expect(call.callParams['to'], 'a964e7475f81733e800744b93950c0c1c9923902');
+    expect(call.callParams['deadline'], BigInt.from(1602326092));
   });
 
   test('UNISWAP decode swapExactTokensForETH', () {
@@ -33,16 +29,11 @@ void main() {
     var call = ContractCall.fromBinary(data, abi);
     expect(call.functionName, 'swapExactTokensForETH');
     expect(call.callParams.length, 5);
-    expect(call.callParams[0].paramName, 'amountIn');
-    expect(call.callParams[1].paramName, 'amountOutMin');
-    expect(call.callParams[2].paramName, 'path');
-    expect(call.callParams[3].paramName, 'to');
-    expect(call.callParams[4].paramName, 'deadline');
-    expect(call.callParams[0].paramValue.toInt(), 10000000000000000);
-    expect(call.callParams[1].paramValue.toInt(), 3449092275849723);
-    expect(call.callParams[2].paramValue[0], 'aaf64bfcc32d0f15873a02163e7e500671a4ffcd');
-    expect(call.callParams[3].paramValue, 'a964e7475f81733e800744b93950c0c1c9923902');
-    expect(call.callParams[4].paramValue.toInt(), 1602327472);
+    expect(call.callParams['amountIn'], BigInt.from(10000000000000000));
+    expect(call.callParams['amountOutMin'], BigInt.from(3449092275849723));
+    expect(call.callParams['path'][0], 'aaf64bfcc32d0f15873a02163e7e500671a4ffcd');
+    expect(call.callParams['to'], 'a964e7475f81733e800744b93950c0c1c9923902');
+    expect(call.callParams['deadline'], BigInt.from(1602327472));
   });
 
 }

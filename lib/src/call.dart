@@ -8,31 +8,16 @@ import 'package:typed_data/typed_buffers.dart';
 import 'abi.dart';
 import 'codec.dart';
 
-class CallParam {
-  String paramName;
-  dynamic paramValue;
-  CallParam(this.paramName, this.paramValue);
-  CallParam.fromJson(Map<String, dynamic> json):
-    paramName = json['name'],
-    paramValue = json['value'];
-
-  Map<String, dynamic> toJson() => {
-    'name': paramName,
-    'value': paramValue is BigInt ? paramValue.toString() : paramValue
-  };
-}
-
 class ContractCall {
   String functionName;
-  List<CallParam> callParams;
+  Map<String, dynamic> callParams;
 
-  dynamic getCallParam(String paramName) =>
-    callParams.firstWhere((p) => p.paramName == paramName, orElse: () => null)?.paramValue;
+  dynamic getCallParam(String paramName) => callParams[paramName];
 
-  ContractCall(this.functionName) :callParams = [];
+  ContractCall(this.functionName) :callParams = {};
 
   ContractCall setCallParam(String key, dynamic value) {
-    callParams.add(CallParam(key, value));
+    callParams[key] = value;
     return this;
   }
 
@@ -52,7 +37,7 @@ class ContractCall {
   ///```
   ContractCall.fromJson(Map<String, dynamic> json):
     functionName = json['function'],
-    callParams = List<CallParam>.from(json['params'].map((i) => CallParam.fromJson(i)));
+    callParams = json['params'];
 
   Map<String, dynamic> toJson() =>
     {
@@ -71,15 +56,15 @@ class ContractCall {
       throw "Method id ${methodId} not found in abi, check whether input and abi matches";
     }
     functionName = abiEntry.name;
+    callParams = {};
 
     var paramBuffer = buffer.skip(4);
-    callParams = new List();
     var decoded = decodeType(abiEntry.paramDescription, paramBuffer);
     if((decoded as List).length != abiEntry.inputs.length) {
       throw "Decoded param count does not match function input count";
     }
     for(var i = 0; i < abiEntry.inputs.length; i++) {
-      callParams.add(CallParam(abiEntry.inputs[i].name, decoded[i]));
+      callParams[abiEntry.inputs[i].name] = decoded[i];
     }
   }
 
@@ -87,6 +72,6 @@ class ContractCall {
     var abiEntry = abi.getABIEntryByMethodName(functionName);
     return Uint8List.fromList(
       abiEntry.methodBytes + 
-      encodeType(abiEntry.paramDescription, callParams.map((i) => i.paramValue).toList()));
+      encodeType(abiEntry.paramDescription, abiEntry.inputs.map((i) => callParams[i.name]).toList()));
   }
 }
