@@ -1,3 +1,6 @@
+# 0.1.4
+* Simplify call param structure, support native map as call param
+
 # 0.1.3
 * Fix bug when encoding/decoding for empty param list
 

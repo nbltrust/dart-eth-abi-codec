@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:pointycastle/digests/sha3.dart';
 
+import 'codec.dart';
+
 class ContractInput {
   final String name;
   final String type;
@@ -47,6 +49,11 @@ class ContractABIEntry {
     payable = json['payable'],
     inputs = List<ContractInput>.from(json['inputs'].map((i) => ContractInput.fromJson(i))),
     outputs = List<ContractOutput>.from(json['outputs'].map((i) => ContractOutput.fromJson(i)));
+
+  Uint8List composeCall(Map<String, dynamic> callParams) {
+    return Uint8List.fromList(methodBytes + 
+      encodeType(paramDescription, inputs.map((n) => callParams[n.name]).toList()));
+  }
 }
 
 class ContractABI {
