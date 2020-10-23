@@ -3,8 +3,10 @@ library eth_abi_codec.abi;
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:pointycastle/digests/sha3.dart';
+import 'package:typed_data/typed_buffers.dart';
 
 import 'codec.dart';
+import 'call.dart';
 
 class ContractInput {
   final String name;
@@ -50,6 +52,21 @@ class ContractABIEntry {
     inputs = List<ContractInput>.from(json['inputs'].map((i) => ContractInput.fromJson(i))),
     outputs = List<ContractOutput>.from(json['outputs'].map((i) => ContractOutput.fromJson(i)));
 
+  Map<String, dynamic> decomposeCall(Uint8List data) {
+    var buffer = new Uint8Buffer();
+    buffer.addAll(data);
+    var decoded = decodeType(paramDescription, buffer);
+    if((decoded as List).length != inputs.length) {
+      throw "Decoded param count does not match function input count";
+    }
+
+    Map<String, dynamic> result = {};
+    for(var i = 0; i < inputs.length; i++) {
+      result[inputs[i].name] = decoded[i];
+    }
+    return result;
+  }
+
   Uint8List composeCall(Map<String, dynamic> callParams) {
     return Uint8List.fromList(methodBytes + 
       encodeType(paramDescription, inputs.map((n) => callParams[n.name]).toList()));
@@ -81,5 +98,22 @@ class ContractABI {
 
   ContractABIEntry getABIEntryByMethodName(String methodName) {
     return methodNameMap[methodName];
+  }
+
+  Uint8List composeCall(ContractCall call)
+    => getABIEntryByMethodName(call.functionName).composeCall(call.callParams);
+
+  ContractCall decomposeCall(Uint8List data) {
+    var methodId = hex.encode(data.sublist(0, 4));
+    var abiEntry = getABIEntryByMethodId(methodId);
+    if(abiEntry == null) {
+      throw "Method id ${methodId} not found in abi, check whether input and abi matches";
+    }
+    var call = ContractCall(abiEntry.name);
+    var params = abiEntry.decomposeCall(data.sublist(4));
+    params.forEach((key, value) {
+      call.setCallParam(key, value);
+    });
+    return call;
   }
 }
