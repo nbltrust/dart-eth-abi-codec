@@ -29,7 +29,12 @@ class ContractCall {
   dynamic getCallParam(String paramName) =>
     callParams.firstWhere((p) => p.paramName == paramName, orElse: () => null)?.paramValue;
 
-  ContractCall(this.functionName, this.callParams);
+  ContractCall(this.functionName) :callParams = [];
+
+  ContractCall setCallParam(String key, dynamic value) {
+    callParams.add(CallParam(key, value));
+    return this;
+  }
 
   /// fromJson takes a Map<String, dynamic> as input
   ///

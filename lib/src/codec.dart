@@ -162,7 +162,8 @@ dynamic decodeType(String type, Iterable b) {
   }
 
   if(type.startsWith('(') && type.endsWith(')')) {
-    var subtypes = type.substring(1, type.length - 1).split(',');
+    var types = type.substring(1, type.length - 1);
+    var subtypes = types.length == 0 ? [] : types.split(",");
     List<dynamic> result = new List();
     for(var i = 0; i < subtypes.length; i++) {
       if(isDynamicType(subtypes[i])) {
@@ -209,7 +210,8 @@ Uint8List encodeType(String type, dynamic data) {
   }
 
   if(type.startsWith('(') && type.endsWith(')')) {
-    var subtypes = type.substring(1, type.length - 1).split(',');
+    var types = type.substring(1, type.length - 1);
+    var subtypes = types.length == 0 ? [] : types.split(",");
     if(subtypes.length != (data as List).length) {
       throw "incompatibal input length and contract abi arguments for ${type}";
     }
