@@ -1,3 +1,6 @@
+# 0.1.5
+* Allow decode contract call result
+
 # 0.1.4
 * Simplify call param structure, support native map as call param
 

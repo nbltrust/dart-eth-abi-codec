@@ -36,6 +36,11 @@ class ContractABIEntry {
     return '(${params})';
   }
 
+  String get resultDescription {
+    var results = outputs.map((i) => i.type).join(',');
+    return '(${results})';
+  }
+
   Uint8List get methodBytes {
     var s = '${name}${paramDescription}'.codeUnits;
     return SHA3Digest(256, true).process(Uint8List.fromList(s)).sublist(0, 4);
@@ -71,6 +76,21 @@ class ContractABIEntry {
     return Uint8List.fromList(methodBytes + 
       encodeType(paramDescription, inputs.map((n) => callParams[n.name]).toList()));
   }
+
+  Map<String, dynamic> decomposeResult(Uint8List data) {
+    var buffer = new Uint8Buffer();
+    buffer.addAll(data);
+    var decoded = decodeType(resultDescription, buffer);
+    if((decoded as List).length != outputs.length) {
+      throw "Decoded result count does not match function output count";
+    }
+
+    Map<String, dynamic> result = {};
+    for(var i = 0; i < outputs.length; i++) {
+      result[outputs[i].name] = decoded[i];
+    }
+    return result;
+  }
 }
 
 class ContractABI {
@@ -102,6 +122,9 @@ class ContractABI {
 
   Uint8List composeCall(ContractCall call)
     => getABIEntryByMethodName(call.functionName).composeCall(call.callParams);
+
+  Map<String, dynamic> decomposeResult(String functionName, Uint8List data)
+    => getABIEntryByMethodName(functionName).decomposeResult(data);
 
   ContractCall decomposeCall(Uint8List data) {
     var methodId = hex.encode(data.sublist(0, 4));

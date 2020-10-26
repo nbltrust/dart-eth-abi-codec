@@ -15,7 +15,7 @@ void main() {
   
   test('ERC20 decode transfer', () {
     var data = hex.decode('a9059cbb000000000000000000000000c9d983203307abccd3e1b303a00ea0a19724fe2c000000000000000000000000000000000000000000000000000000031f6ae100');
-    var call = ContractCall.fromBinary(data, abi);
+    var call = abi.decomposeCall(data);
     expect(call.functionName, 'transfer');
     expect(call.callParams.length, 2);
     expect(call.callParams['_to'], 'c9d983203307abccd3e1b303a00ea0a19724fe2c');
