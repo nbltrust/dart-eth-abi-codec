@@ -43,6 +43,19 @@ Uint8List encodeUint256(BigInt v) {
   return padLeft(r, 32);
 }
 
+BigInt decodeInt256(Iterable b) {
+  return BigInt.parse(hex.encode(b.take(32).toList()), radix: 16);
+}
+
+Uint8List encodeInt256(BigInt v) {
+  var s = v.toRadixString(16);
+  if(s.length.isOdd) {
+    s = '0' + s;
+  }
+  var r = Uint8List.fromList(hex.decode(s));
+  return padLeft(r, 32);
+}
+
 int decodeInt(Iterable b) {
   return decodeUint256(b).toInt();
 }
@@ -157,6 +170,10 @@ dynamic decodeType(String type, Iterable b) {
     return decodeUint256(b);
   }
 
+  if(type.startsWith('int')) {
+    return decodeInt256(b);
+  }
+
   if(type.startsWith('bytes')) {
     return decodeBytes(b);
   }
@@ -201,6 +218,13 @@ Uint8List encodeType(String type, dynamic data) {
   if(type.startsWith('uint')) {
     if(data is BigInt)
       return encodeUint256(data);
+    else
+      return encodeInt(data);
+  }
+
+  if(type.startsWith('int')) {
+    if(data is BigInt)
+      return encodeInt256(data);
     else
       return encodeInt(data);
   }

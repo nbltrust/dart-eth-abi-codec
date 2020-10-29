@@ -1,3 +1,6 @@
+# 0.1.6
+* Allow encoding/decoding for int256
+
 # 0.1.5
 * Allow decode contract call result
 

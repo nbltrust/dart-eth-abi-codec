@@ -25,6 +25,14 @@ void main() {
     expect((r2 as BigInt).toInt(), 5);
   });
 
+  test('int256 test', () {
+    var r1 = runDecode('int256', ['0000000000000000000000000000000000000000000000000000000000000001']);
+    expect((r1 as BigInt).toInt(), 1);
+
+    var r2 = runDecode('int256', ['0000000000000000000000000000000000000000000000000000000000000005']);
+    expect((r2 as BigInt).toInt(), 5);
+  });
+
   test('string test', () {
     var r1 = runDecode('string', [
       '0000000000000000000000000000000000000000000000000000000000000003',
