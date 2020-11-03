@@ -12,9 +12,8 @@ class ContractCall {
 
   ContractCall(this.functionName) :callParams = {};
 
-  ContractCall setCallParam(String key, dynamic value) {
+  void setCallParam(String key, dynamic value) {
     callParams[key] = value;
-    return this;
   }
 
   /// fromJson takes a Map<String, dynamic> as input
