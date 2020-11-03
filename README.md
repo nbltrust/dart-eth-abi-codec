@@ -46,8 +46,8 @@ var abi = ContractABI.fromJson(jsonDecode(ABI_JSON_STR));
 // Step2.
 // Build contract call object
 var call = ContractCall('transfer')
-    .setCallParam('_to', 'c9d983203307abccd3e1b303a00ea0a19724fe2c')
-    .setCallParam('_value', BigInt.from(1000000000000000000));
+    ..setCallParam('_to', 'c9d983203307abccd3e1b303a00ea0a19724fe2c')
+    ..setCallParam('_value', BigInt.from(1000000000000000000));
 
 // Step3.
 // Encode call

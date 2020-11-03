@@ -1,3 +1,6 @@
+# 0.1.7
+* Update setCallParam to cascade call
+
 # 0.1.6
 * Allow encoding/decoding for int256
 
