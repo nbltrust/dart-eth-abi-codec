@@ -66,12 +66,16 @@ Uint8List encodeInt(int v) {
 
 Uint8List decodeBytes(Iterable b) {
   var length = decodeInt(b);
-  return Uint8List.fromList(b.skip(32).take(length));
+  return Uint8List.fromList(b.skip(32).take(length).toList());
 }
 
 Uint8List encodeBytes(Uint8List v) {
   var length = encodeInt(v.length);
-  return length + v;
+  var pad0s = 32 - v.length % 32;
+  List<int> pads = [];
+  for(var i = 0; i < pad0s; i++)
+    pads.add(0);
+  return Uint8List.fromList(length + v + pads);
 }
 
 String decodeString(Iterable b) {
@@ -142,6 +146,42 @@ Uint8List encodeFixedLengthList(List<dynamic> l, String type, int length) {
   }
 }
 
+List<String> splitTypes(String typesStr) {
+  if(typesStr.length == 0)
+    return [];
+  var currentStart = 0;
+  List<String> subTypes = [];
+  List<String> parentheses = [];
+  for(var i = 0; i < typesStr.length; i++) {
+    var c = typesStr[i];
+    switch(c) {
+      case '(':
+      case '[':
+        parentheses.add(c);
+        break;
+      case ')':
+        var pop = parentheses.removeLast();
+        assert(pop == '(');
+        break;
+      case ']':
+        var pop = parentheses.removeLast();
+        assert(pop == '[');
+        break;
+      case ',':
+        if(parentheses.isEmpty) {
+          subTypes.add(typesStr.substring(currentStart, i));
+          currentStart = i + 1;
+        }
+        break;
+    }
+  }
+
+  if(currentStart < typesStr.length) {
+    subTypes.add(typesStr.substring(currentStart));
+  }
+  return subTypes;
+}
+
 dynamic decodeType(String type, Iterable b) {
   switch (type) {
     case 'string':
@@ -152,7 +192,7 @@ dynamic decodeType(String type, Iterable b) {
       break;
   }
 
-  var reg = RegExp(r"^([a-z\d\[\]]{1,})\[([\d]*)\]$");
+  var reg = RegExp(r"^([a-z\d\[\]\(\),]{1,})\[([\d]*)\]$");
   var match = reg.firstMatch(type);
   if(match != null) {
     var baseType = match.group(1);
@@ -180,7 +220,7 @@ dynamic decodeType(String type, Iterable b) {
 
   if(type.startsWith('(') && type.endsWith(')')) {
     var types = type.substring(1, type.length - 1);
-    var subtypes = types.length == 0 ? [] : types.split(",");
+    var subtypes = splitTypes(types);
     List<dynamic> result = new List();
     for(var i = 0; i < subtypes.length; i++) {
       if(isDynamicType(subtypes[i])) {
@@ -202,7 +242,7 @@ Uint8List encodeType(String type, dynamic data) {
       return encodeAddress(data);
   }
 
-  var reg = RegExp(r"^([a-z\d\[\]]{1,})\[([\d]*)\]$");
+  var reg = RegExp(r"^([a-z\d\[\]\(\),]{1,})\[([\d]*)\]$");
   var match = reg.firstMatch(type);
   if(match != null) {
     var baseType = match.group(1);
@@ -235,7 +275,7 @@ Uint8List encodeType(String type, dynamic data) {
 
   if(type.startsWith('(') && type.endsWith(')')) {
     var types = type.substring(1, type.length - 1);
-    var subtypes = types.length == 0 ? [] : types.split(",");
+    var subtypes = splitTypes(types);
     if(subtypes.length != (data as List).length) {
       throw "incompatibal input length and contract abi arguments for ${type}";
     }

@@ -10,9 +10,20 @@ import 'call.dart';
 
 class ContractInput {
   final String name;
-  final String type;
+  final String _type;
+  final List<ContractInput> components;
+
+  String get type {
+    if(!_type.startsWith('tuple'))
+      return _type;
+    return _type.replaceFirst('tuple', '(' + components.map((i) => i.type).join(',') + ')');
+  }
+
   ContractInput.fromJson(Map<String, dynamic> json)
-    : name = json['name'], type = json['type'];
+    : 
+    name = json['name'], 
+    _type = json['type'],
+    components = List<ContractInput>.from(((json['components']??[]) as List).map((i) => ContractInput.fromJson(i)));
 }
 
 class ContractOutput {
