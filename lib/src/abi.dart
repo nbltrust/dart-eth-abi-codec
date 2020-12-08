@@ -73,7 +73,7 @@ class ContractABIEntry {
     buffer.addAll(data);
     var decoded = decodeType(paramDescription, buffer);
     if((decoded as List).length != inputs.length) {
-      throw "Decoded param count does not match function input count";
+      throw Exception("Decoded param count does not match function input count");
     }
 
     Map<String, dynamic> result = {};
@@ -93,7 +93,7 @@ class ContractABIEntry {
     buffer.addAll(data);
     var decoded = decodeType(resultDescription, buffer);
     if((decoded as List).length != outputs.length) {
-      throw "Decoded result count does not match function output count";
+      throw Exception("Decoded result count does not match function output count");
     }
 
     Map<String, dynamic> result = {};
@@ -141,7 +141,7 @@ class ContractABI {
     var methodId = hex.encode(data.sublist(0, 4));
     var abiEntry = getABIEntryByMethodId(methodId);
     if(abiEntry == null) {
-      throw "Method id ${methodId} not found in abi, check whether input and abi matches";
+      throw Exception("Method id ${methodId} not found in abi, check whether input and abi matches");
     }
     var call = ContractCall(abiEntry.name);
     var params = abiEntry.decomposeCall(data.sublist(4));

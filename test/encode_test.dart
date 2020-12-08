@@ -26,6 +26,14 @@ void main() {
     expect(r2, '0000000000000000000000000000000000000000000000000000000000000005');
   });
 
+  test('bool test', () {
+    var r1 = runEncode('bool', true);
+    expect(r1, '0000000000000000000000000000000000000000000000000000000000000001');
+
+    var r2 = runEncode('bool', false);
+    expect(r2, '0000000000000000000000000000000000000000000000000000000000000000');
+  });
+
   test('string test', () {
     var r1 = runEncode('string', 'one');
     expect(r1, 

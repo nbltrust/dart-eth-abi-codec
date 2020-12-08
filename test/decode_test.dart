@@ -33,6 +33,15 @@ void main() {
     expect((r2 as BigInt).toInt(), 5);
   });
 
+  test('bool test', () {
+    var r1 = runDecode('bool', ['0000000000000000000000000000000000000000000000000000000000000001']);
+    expect(r1, true);
+    var r2 = runDecode('bool', ['0000000000000000000000000000000000000000000000000000000000000000']);
+    expect(r2, false);
+
+    expect(() => runDecode('bool', ['0000000000000000000000000000000000000000000000000000000000000002']), throwsException);
+  });
+  
   test('string test', () {
     var r1 = runDecode('string', [
       '0000000000000000000000000000000000000000000000000000000000000003',
