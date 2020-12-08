@@ -1,3 +1,6 @@
+# 0.1.8
+* Add encoding/decoding for bool
+
 # 0.1.7
 * Update setCallParam to cascade call
 

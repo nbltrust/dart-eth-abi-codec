@@ -64,6 +64,19 @@ Uint8List encodeInt(int v) {
   return encodeUint256(BigInt.from(v));
 }
 
+bool decodeBool(Iterable b) {
+  var decoded = decodeUint256(b).toInt();
+  if(decoded != 0 && decoded != 1) {
+    throw Exception("invalid encoded value for bool");
+  }
+
+  return decoded == 1;
+}
+
+Uint8List encodeBool(bool b) {
+  return encodeInt(b ? 1 : 0);
+}
+
 Uint8List decodeBytes(Iterable b) {
   var length = decodeInt(b);
   return Uint8List.fromList(b.skip(32).take(length).toList());
@@ -95,7 +108,7 @@ String decodeAddress(Iterable b) {
 Uint8List encodeAddress(String a) {
   Uint8List encoded = hex.decode(a);
   if(encoded.length != 20) {
-    throw "invalid address length";
+    throw Exception("invalid address length");
   }
   return padLeft(encoded, 32);
 }
@@ -125,7 +138,7 @@ List<dynamic> decodeFixedLengthList(Iterable b, String type, int length) {
 
 Uint8List encodeFixedLengthList(List<dynamic> l, String type, int length) {
   if(l.length != length) {
-    throw "incompatibal input list length for type ${type}";
+    throw Exception("incompatibal input list length for type ${type}");
   }
 
   if(isDynamicType(type)) {
@@ -188,6 +201,8 @@ dynamic decodeType(String type, Iterable b) {
       return decodeString(b);
     case 'address':
       return decodeAddress(b);
+    case 'bool':
+      return decodeBool(b);
     default:
       break;
   }
@@ -240,6 +255,8 @@ Uint8List encodeType(String type, dynamic data) {
       return encodeString(data);
     case 'address':
       return encodeAddress(data);
+    case 'bool':
+      return encodeBool(data);
   }
 
   var reg = RegExp(r"^([a-z\d\[\]\(\),]{1,})\[([\d]*)\]$");
@@ -277,7 +294,7 @@ Uint8List encodeType(String type, dynamic data) {
     var types = type.substring(1, type.length - 1);
     var subtypes = splitTypes(types);
     if(subtypes.length != (data as List).length) {
-      throw "incompatibal input length and contract abi arguments for ${type}";
+      throw Exception("incompatibal input length and contract abi arguments for ${type}");
     }
 
     List<int> headers = [];
