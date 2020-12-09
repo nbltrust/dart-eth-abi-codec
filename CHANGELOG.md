@@ -1,3 +1,6 @@
+# 0.1.9
+* Enable encoding string as integer value
+
 # 0.1.8
 * Add encoding/decoding for bool
 

@@ -275,14 +275,32 @@ Uint8List encodeType(String type, dynamic data) {
   if(type.startsWith('uint')) {
     if(data is BigInt)
       return encodeUint256(data);
-    else
+    else if(data is String) {
+      String d = data.toLowerCase();
+      if(d.startsWith('0x')) {
+        return encodeUint256(BigInt.parse(d.substring(2), radix: 16));
+      } else if(d.contains(new RegExp(r'[a-f]'))) {
+        return encodeUint256(BigInt.parse(d, radix: 16));
+      } else {
+        return encodeUint256(BigInt.parse(d));
+      }
+    } else
       return encodeInt(data);
   }
 
   if(type.startsWith('int')) {
     if(data is BigInt)
       return encodeInt256(data);
-    else
+    else if(data is String) {
+      String d = data.toLowerCase();
+      if(d.startsWith('0x')) {
+        return encodeInt256(BigInt.parse(d.substring(2), radix: 16));
+      } else if(d.contains(new RegExp(r'[a-f]'))) {
+        return encodeInt256(BigInt.parse(d, radix: 16));
+      } else {
+        return encodeInt256(BigInt.parse(d));
+      }
+    } else
       return encodeInt(data);
   }
 
