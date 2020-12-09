@@ -1,3 +1,6 @@
+# 0.2.0
+* Fix bug when encode/decode static typed array
+
 # 0.1.9
 * Enable encoding string as integer value
 

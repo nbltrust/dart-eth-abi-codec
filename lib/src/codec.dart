@@ -1,19 +1,65 @@
 library eth_abi_codec.codec;
 
+/// 
+/// https://docs.soliditylang.org/en/v0.5.3/abi-spec.html
+/// 
+
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+
+/// Judge whether a type is dynamically located
+/// definition: The following types are called “dynamic”:
+/// bytes
+/// string
+/// T[] for any T
+/// T[k] for any dynamic T and any k >= 0
+/// (T1,...,Tk) if Ti is dynamic for some 1 <= i <= k
 
 bool isDynamicType(String typeName) {
   if(typeName == 'bytes' || typeName == 'string') {
     return true;
   }
-  if(typeName.endsWith(']')) {
-    return true;
+
+  var reg = RegExp(r"^([a-z\d\[\]\(\),]{1,})\[([\d]*)\]$");
+  var match = reg.firstMatch(typeName);
+  if(match != null) {
+    var baseType = match.group(1);
+    var repeatCount = match.group(2);
+    if(repeatCount == "") {
+      return true;
+    }
+    return isDynamicType(baseType);
   }
-  if(typeName.endsWith(')')) {
-    return true;
+
+  if(typeName.endsWith(')') && typeName.startsWith('(')) {
+    var subTypes = typeName.substring(1, typeName.length - 1).split(',');
+    for(var i = 0; i < subTypes.length; i++) {
+      if(isDynamicType(subTypes[i]))
+        return true;
+    }
+    return false;
   }
   return false;
+}
+
+
+int sizeOfStaticType(String typeName) {
+  var reg = RegExp(r"^([a-z\d\[\]\(\),]{1,})\[([\d]*)\]$");
+  var match = reg.firstMatch(typeName);
+  if(match != null) {
+    var baseType = match.group(1);
+    var repeatCount = match.group(2);
+    assert(repeatCount != "");
+    return sizeOfStaticType(baseType) * int.parse(repeatCount);
+  }
+
+  if(typeName.endsWith(')') && typeName.startsWith('(')) {
+    var subTypes = typeName.substring(1, typeName.length - 1).split(',');
+    return subTypes.fold(0, (previousValue, element) => previousValue + sizeOfStaticType(element));
+  }
+
+  // other static types all has capacity of 32
+  return 32;
 }
 
 Uint8List padLeft(Uint8List d, int alignBytes) {
@@ -237,12 +283,15 @@ dynamic decodeType(String type, Iterable b) {
     var types = type.substring(1, type.length - 1);
     var subtypes = splitTypes(types);
     List<dynamic> result = new List();
+    int headerOffset = 0;
     for(var i = 0; i < subtypes.length; i++) {
       if(isDynamicType(subtypes[i])) {
-        var relocate = decodeInt(b.skip(i * 32));
+        var relocate = decodeInt(b.skip(headerOffset));
         result.add(decodeType(subtypes[i], b.skip(relocate)));
+        headerOffset += 32;
       } else {
-        result.add(decodeType(subtypes[i], b.skip(i * 32)));
+        result.add(decodeType(subtypes[i], b.skip(headerOffset)));
+        headerOffset += sizeOfStaticType(subtypes[i]);
       }
     }
     return result;
@@ -318,7 +367,13 @@ Uint8List encodeType(String type, dynamic data) {
     List<int> headers = [];
     List<int> contents = [];
 
-    int baseOffset = subtypes.length * 32;
+    int baseOffset = 0;
+    for(var i = 0; i < subtypes.length; i++) {
+      if(isDynamicType(subtypes[i]))
+        baseOffset += 32;
+      else
+        baseOffset += sizeOfStaticType(subtypes[i]);
+    }
 
     for(var i = 0; i < subtypes.length; i++) {
       if(isDynamicType(subtypes[i])) {
