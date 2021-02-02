@@ -5,6 +5,8 @@ import 'package:convert/convert.dart';
 import 'package:typed_data/typed_buffers.dart';
 import 'package:eth_abi_codec/eth_abi_codec.dart';
 
+import 'dart:typed_data';
+
 Uint8Buffer prepareBuffer(List<String> hexInputs) {
   var buffer = new Uint8Buffer();
   buffer.addAll(hex.decode(hexInputs.join()));
@@ -61,6 +63,16 @@ void main() {
       '000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c'
     ]);
     expect((r1 as String), "d0a1e359811322d97991e03f863a0c30c2cf029c");
+  });
+
+  test('fixed length bytes test', () {
+    var r1 = runDecode('bytes32', ['c8485cc9d9d6e082fbf95eedb54a338198ce7dbbd24795ad2d8548b27d07b342']);
+    expect(r1 as Uint8List,
+      Uint8List.fromList([0xc8,0x48,0x5c,0xc9,0xd9,0xd6,0xe0,0x82,0xfb,0xf9,0x5e,0xed,0xb5,0x4a,0x33,0x81,0x98,0xce,0x7d,0xbb,0xd2,0x47,0x95,0xad,0x2d,0x85,0x48,0xb2,0x7d,0x07,0xb3,0x42]));
+    
+    var r2 = runDecode('bytes24', ['c8485cc9d9d6e082fbf95eedb54a338198ce7dbbd24795ad0000000000000000']);
+    expect(r2 as Uint8List,
+      Uint8List.fromList([0xc8,0x48,0x5c,0xc9,0xd9,0xd6,0xe0,0x82,0xfb,0xf9,0x5e,0xed,0xb5,0x4a,0x33,0x81,0x98,0xce,0x7d,0xbb,0xd2,0x47,0x95,0xad]));
   });
 
   test('static list test', () {

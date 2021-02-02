@@ -4,6 +4,8 @@ import 'package:test/test.dart';
 import 'package:convert/convert.dart';
 import 'package:eth_abi_codec/eth_abi_codec.dart';
 
+import 'dart:typed_data';
+
 String runEncode(String type, dynamic input) {
   var l = encodeType(type, input);
   return hex.encode(l);
@@ -59,6 +61,18 @@ void main() {
       '000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c');
   });
   
+  test('fixed length bytes test', () {
+    var r1 = runEncode('bytes32', new Uint8List.fromList([0xc8,0x48,0x5c,0xc9,0xd9,0xd6,0xe0,0x82,0xfb,0xf9,0x5e,0xed,0xb5,0x4a,0x33,0x81,0x98,0xce,0x7d,0xbb,0xd2,0x47,0x95,0xad,0x2d,0x85,0x48,0xb2,0x7d,0x07,0xb3,0x42]));
+    expect(r1,
+      'c8485cc9d9d6e082fbf95eedb54a338198ce7dbbd24795ad2d8548b27d07b342');
+      
+    var r2 = runEncode('bytes24', new Uint8List.fromList([0xc8,0x48,0x5c,0xc9,0xd9,0xd6,0xe0,0x82,0xfb,0xf9,0x5e,0xed,0xb5,0x4a,0x33,0x81,0x98,0xce,0x7d,0xbb,0xd2,0x47,0x95,0xad]));
+    expect(r2,
+      'c8485cc9d9d6e082fbf95eedb54a338198ce7dbbd24795ad0000000000000000');
+  });
+
+  
+
   test('static list test', () {
     var r1 = runEncode('(uint256[4],uint256)', [[1,2,3,4], 5]);
     expect(r1, 

@@ -123,9 +123,29 @@ Uint8List encodeBool(bool b) {
   return encodeInt(b ? 1 : 0);
 }
 
+Uint8List decodeFixedBytes(Iterable b, int length) {
+  return Uint8List.fromList(b.take(length).toList());
+}
+
 Uint8List decodeBytes(Iterable b) {
   var length = decodeInt(b);
   return Uint8List.fromList(b.skip(32).take(length).toList());
+}
+
+Uint8List encodeFixedBytes(Uint8List v, int length) {
+  if(v.length > 32) {
+    throw Exception("Can not encode fixed bytes of length longer than 32");
+  }
+
+  if(v.length != length) {
+    throw Exception("incompatible byte length");
+  }
+
+  var pad0s = 32 - v.length;
+  List<int> pads = [];
+  for(var i = 0; i < pad0s; i++)
+    pads.add(0);
+  return Uint8List.fromList(v + pads);
 }
 
 Uint8List encodeBytes(Uint8List v) {
@@ -249,6 +269,8 @@ dynamic decodeType(String type, Iterable b) {
       return decodeAddress(b);
     case 'bool':
       return decodeBool(b);
+    case 'bytes':
+      return decodeBytes(b);
     default:
       break;
   }
@@ -275,8 +297,10 @@ dynamic decodeType(String type, Iterable b) {
     return decodeInt256(b);
   }
 
+  // bytes<M> 0 < M <= 32
   if(type.startsWith('bytes')) {
-    return decodeBytes(b);
+    var length = int.parse(type.substring(5));
+    return decodeFixedBytes(b, length);
   }
 
   if(type.startsWith('(') && type.endsWith(')')) {
@@ -306,6 +330,8 @@ Uint8List encodeType(String type, dynamic data) {
       return encodeAddress(data);
     case 'bool':
       return encodeBool(data);
+    case 'bytes':
+      return encodeBytes(data);
   }
 
   var reg = RegExp(r"^([a-z\d\[\]\(\),]{1,})\[([\d]*)\]$");
@@ -354,7 +380,8 @@ Uint8List encodeType(String type, dynamic data) {
   }
 
   if(type.startsWith('bytes')) {
-    return encodeBytes(data);
+    var length = int.parse(type.substring(5));
+    return encodeFixedBytes(data, length);
   }
 
   if(type.startsWith('(') && type.endsWith(')')) {

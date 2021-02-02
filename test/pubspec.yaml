@@ -8,7 +8,9 @@ dependencies:
   typed_data: ^1.2.0
   test: any
   eth_abi_codec:
-    path: ../
+    git:
+      url: https://github.com/nbltrust/dart-eth-abi-codec
+      ref: 0.2.1
 
 dev_dependencies:
   build_runner: any

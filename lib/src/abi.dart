@@ -19,6 +19,8 @@ class ContractInput {
     return _type.replaceFirst('tuple', '(' + components.map((i) => i.type).join(',') + ')');
   }
 
+  String get originType => _type;
+
   ContractInput.fromJson(Map<String, dynamic> json)
     : 
     name = json['name'], 
