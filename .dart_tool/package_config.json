@@ -1,0 +1,50 @@
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "collection",
+      "rootUri": "file:///Users/zzw/.pub-cache/hosted/pub.flutter-io.cn/collection-1.17.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "convert",
+      "rootUri": "file:///Users/zzw/.pub-cache/hosted/pub.flutter-io.cn/convert-3.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "js",
+      "rootUri": "file:///Users/zzw/.pub-cache/hosted/pub.flutter-io.cn/js-0.6.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.16"
+    },
+    {
+      "name": "meta",
+      "rootUri": "file:///Users/zzw/.pub-cache/hosted/pub.flutter-io.cn/meta-1.8.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "pointycastle",
+      "rootUri": "file:///Users/zzw/.pub-cache/hosted/pub.flutter-io.cn/pointycastle-3.6.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "typed_data",
+      "rootUri": "file:///Users/zzw/.pub-cache/hosted/pub.flutter-io.cn/typed_data-1.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "eth_abi_codec",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    }
+  ],
+  "generated": "2022-10-25T02:46:37.318559Z",
+  "generator": "pub",
+  "generatorVersion": "2.18.2"
+}

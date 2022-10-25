@@ -2,6 +2,7 @@ library eth_abi_codec_test.erc20_decode_tests;
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:test/test.dart';
@@ -15,7 +16,7 @@ void main() {
   
   test('ERC20 decode transfer', () {
     var data = hex.decode('a9059cbb000000000000000000000000c9d983203307abccd3e1b303a00ea0a19724fe2c000000000000000000000000000000000000000000000000000000031f6ae100');
-    var call = abi.decomposeCall(data);
+    var call = abi.decomposeCall(Uint8List.fromList(data));
     expect(call.functionName, 'transfer');
     expect(call.callParams.length, 2);
     expect(call.callParams['_to'], 'c9d983203307abccd3e1b303a00ea0a19724fe2c');
@@ -25,7 +26,7 @@ void main() {
 
   test('ERC20 decode approve', () {
     var data = hex.decode('095ea7b30000000000000000000000007a250d5630b4cf539739df2c5dacb4c659f2488dffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
-    var call = ContractCall.fromBinary(data, abi);
+    var call = ContractCall.fromBinary(Uint8List.fromList(data), abi);
 
     expect(call.functionName, 'approve');
     expect(call.callParams.length, 2);

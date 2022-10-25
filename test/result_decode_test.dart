@@ -2,6 +2,7 @@ library eth_abi_codec_test.result_decode_test;
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:test/test.dart';
@@ -15,7 +16,7 @@ void main() {
   
   test('ERC20 decode name result', () {
     var data = hex.decode('0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000a5465746865722055534400000000000000000000000000000000000000000000');
-    var res = abi.decomposeResult('name', data);
-    expect(res[''], 'Tether USD');
+    var res = abi.decomposeResult('name', Uint8List.fromList(data));
+    expect(res?[''], 'Tether USD');
   });
 }

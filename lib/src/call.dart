@@ -45,5 +45,5 @@ class ContractCall {
     return abi.decomposeCall(data);
   }
 
-  Uint8List toBinary(ContractABI abi) => abi.composeCall(this);
+  Uint8List? toBinary(ContractABI abi) => abi.composeCall(this);
 }

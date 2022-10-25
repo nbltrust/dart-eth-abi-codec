@@ -8,7 +8,10 @@ import 'dart:typed_data';
 
 String runEncode(String type, dynamic input) {
   var l = encodeType(type, input);
-  return hex.encode(l);
+  if(l == null){
+    return "";
+  }
+  return hex.encode(l.cast<int>());
 }
 
 void main() {

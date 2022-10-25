@@ -2,7 +2,7 @@ library eth_abi_codec.abi;
 
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
-import 'package:pointycastle/digests/sha3.dart';
+import 'package:pointycastle/api.dart';
 import 'package:typed_data/typed_buffers.dart';
 
 import 'codec.dart';
@@ -56,19 +56,19 @@ class ContractABIEntry {
 
   Uint8List get methodBytes {
     var s = '${name}${paramDescription}'.codeUnits;
-    return SHA3Digest(256, true).process(Uint8List.fromList(s)).sublist(0, 4);
+    return Digest('Keccak/256').process(Uint8List.fromList(s)).sublist(0, 4);
   }
 
   String get methodId => hex.encode(methodBytes);
 
   ContractABIEntry.fromJson(Map<String, dynamic> json):
-    name = json['name'],
-    type = json['type'],
-    stateMutability = json['statueMutability'],
-    constant = json['constant'],
-    payable = json['payable'],
-    inputs = List<ContractInput>.from(json['inputs'].map((i) => ContractInput.fromJson(i))),
-    outputs = List<ContractOutput>.from(json['outputs'].map((i) => ContractOutput.fromJson(i)));
+    name = json['name'] ?? '',
+    type = json['type'] ?? '',
+    stateMutability = json['statueMutability'] ?? '',
+    constant = json['constant'] ?? false,
+    payable = json['payable'] ?? false,
+    inputs =json['inputs'] == null ?[]: List<ContractInput>.from(json['inputs'].map((i) => ContractInput.fromJson(i))),
+    outputs =json['outputs'] == null?[]:List<ContractOutput>.from(json['outputs'].map((i) => ContractOutput.fromJson(i)));
 
   Map<String, dynamic> decomposeCall(Uint8List data) {
     var buffer = new Uint8Buffer();
@@ -85,9 +85,12 @@ class ContractABIEntry {
     return result;
   }
 
-  Uint8List composeCall(Map<String, dynamic> callParams) {
-    return Uint8List.fromList(methodBytes + 
-      encodeType(paramDescription, inputs.map((n) => callParams[n.name]).toList()));
+  Uint8List? composeCall(Map<String, dynamic> callParams) {
+    if(encodeType(paramDescription, inputs.map((n) => callParams[n.name]).toList()) == null){
+      return null;
+    }
+    return Uint8List.fromList(methodBytes +
+        encodeType(paramDescription, inputs.map((n) => callParams[n.name]).toList())!);
   }
 
   Map<String, dynamic> decomposeResult(Uint8List data) {
@@ -125,19 +128,19 @@ class ContractABI {
       });
     }
 
-  ContractABIEntry getABIEntryByMethodId(String methodId) {
+  ContractABIEntry? getABIEntryByMethodId(String methodId) {
     return methodIdMap[methodId];
   }
 
-  ContractABIEntry getABIEntryByMethodName(String methodName) {
+  ContractABIEntry? getABIEntryByMethodName(String methodName) {
     return methodNameMap[methodName];
   }
 
-  Uint8List composeCall(ContractCall call)
-    => getABIEntryByMethodName(call.functionName).composeCall(call.callParams);
+  Uint8List? composeCall(ContractCall call)
+    => getABIEntryByMethodName(call.functionName)?.composeCall(call.callParams);
 
-  Map<String, dynamic> decomposeResult(String functionName, Uint8List data)
-    => getABIEntryByMethodName(functionName).decomposeResult(data);
+  Map<String, dynamic>? decomposeResult(String functionName, Uint8List data)
+    => getABIEntryByMethodName(functionName)?.decomposeResult(data);
 
   ContractCall decomposeCall(Uint8List data) {
     var methodId = hex.encode(data.sublist(0, 4));
