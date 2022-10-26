@@ -49,7 +49,6 @@ int sizeOfStaticType(String typeName) {
   if(match != null) {
     var baseType = match.group(1);
     var repeatCount = match.group(2);
-    print("----------------- repeatCount $repeatCount");
    if(repeatCount != null && repeatCount != ''){
      return sizeOfStaticType(baseType!) * int.parse(repeatCount);
    }
@@ -288,7 +287,6 @@ dynamic decodeType(String type, Iterable<int> b) {
   if(match != null) {
     var baseType = match.group(1);
     var repeatCount = match.group(2);
-    print('--------------repeatCount $repeatCount');
     if(repeatCount == null || repeatCount == '') {
       return decodeList(b, baseType!);
     } else {
